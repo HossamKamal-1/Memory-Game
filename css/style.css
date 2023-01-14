@@ -1,0 +1,110 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  font-family: Arial, Tahoma, sans-serif;
+}
+.win-overlay {
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  color: green;
+  font-weight: bold;
+}
+.control-buttons,
+.win-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  background-color: rgba(255, 255, 255, 0.605);
+  transition: opacitrgba(255, 255, 255, 0.434);
+}
+.control-buttons span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  background-color: #f44336;
+  padding: 15px 25px;
+  font-size: 30px;
+  cursor: pointer;
+  transition: 0.5s;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.control-buttons span:hover {
+  color: black;
+  background-color: rgb(93, 243, 63);
+}
+.info-container {
+  width: 1080px;
+  margin: 20px auto 0;
+  background-color: #f6f6f6;
+  padding: 20px;
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+  border: 2px solid rgba(142, 12, 12, 0.4);
+  max-width: 100%;
+}
+.memory-game-container {
+  width: 1080px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  margin: 20px auto;
+  gap: 10px;
+  max-width: 100%;
+}
+.memory-game-container.no-click {
+  pointer-events: none;
+}
+.memory-game-container .game-block {
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  position: relative;
+  height: 200px;
+}
+.memory-game-container .game-block .face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border: 5px solid rgb(67, 189, 42);
+}
+.memory-game-container .game-block .face img {
+  max-width: 100%;
+  width: 120px;
+  height: 120px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.memory-game-container .game-block .front {
+  background-color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.memory-game-container .game-block .front::before {
+  content: "?";
+  font-size: 140px;
+  color: white;
+}
+.memory-game-container .game-block .back {
+  background-color: #607d88;
+  transform: rotateY(180deg);
+}
+.memory-game-container .game-block.flipped,
+.memory-game-container .game-block.match {
+  transform: rotateY(180deg);
+  pointer-events: none;
+}
