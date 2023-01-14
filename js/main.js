@@ -4,13 +4,7 @@ let gameBlocks = Array.from(gameContainer.children);
 let resultOverlay = document.createElement("div");
 resultOverlay.className = "win-overlay";
 resultOverlay.style.opacity = "1";
-// Add Order Css Property To Game Blocks
-gameBlocks.forEach((block) => {
-  block.style.order = `${Math.floor(Math.random() * gameBlocks.length)}`;
-  block.addEventListener("click", (e) => {
-    flipGameBlock(e.currentTarget);
-  });
-});
+
 document.querySelector(".control-buttons span").onclick = function () {
   let yourName = prompt("What is your name?");
   document.querySelector(".name span").innerHTML =
@@ -28,9 +22,18 @@ document.querySelector(".control-buttons span").onclick = function () {
     });
   }, 1000);
   setTimeout(() => {
-    let timeInterval = setInterval(() => timeCountDown(timeInterval), 1000);
+    let countDownInterval = setInterval(
+      () => timeCountDown(countDownInterval),
+      1000
+    );
   }, 1000);
 };
+
+// Add Order Css Property To Game Blocks + Event Listener
+gameBlocks.forEach((block) => {
+  block.style.order = `${Math.floor(Math.random() * gameBlocks.length)}`;
+  block.addEventListener("click", (e) => flipGameBlock(e.currentTarget));
+});
 
 function timeCountDown(timeInterval) {
   document.querySelector(".time span").innerHTML =
