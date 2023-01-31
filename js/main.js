@@ -1,58 +1,65 @@
-let duration = 1000;
+let flipUnmatchedGameBlockDuration = 800;
+let gameDuration = 60;
 let gameContainer = document.querySelector(".memory-game-container");
 let gameBlocks = Array.from(gameContainer.children);
 let resultOverlay = document.createElement("div");
 resultOverlay.className = "win-overlay";
-resultOverlay.style.opacity = "1";
 
 document.querySelector(".control-buttons span").onclick = function () {
   let yourName = prompt("What is your name?");
   document.querySelector(".name span").innerHTML =
     yourName === "" || yourName === null ? "unknown" : yourName;
-  this.parentElement.style.opacity = "0";
-  setTimeout(() => {
-    this.parentElement.remove();
-  }, 500);
-  gameBlocks.forEach((block) => {
-    block.classList.add("flipped");
-  });
-  setTimeout(() => {
-    gameBlocks.forEach((block) => {
-      block.classList.remove("flipped");
-    });
-  }, 1000);
-  setTimeout(() => {
-    let countDownInterval = setInterval(
-      () => timeCountDown(countDownInterval),
-      1000
-    );
-  }, 1000);
+  this.parentElement.remove();
+  gameBlocks.forEach((block) => block.classList.add("flipped"));
+  tempShowCardsAndStartTime();
 };
-
+async function tempShowCardsAndStartTime() {
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      gameBlocks.forEach((block) => block.classList.remove("flipped"));
+      resolve();
+    }, 2000);
+  });
+  timeCountDown();
+}
 // Add Order Css Property To Game Blocks + Event Listener
 gameBlocks.forEach((block) => {
   block.style.order = `${Math.floor(Math.random() * gameBlocks.length)}`;
   block.addEventListener("click", (e) => flipGameBlock(e.currentTarget));
 });
 
-function timeCountDown(timeInterval) {
-  document.querySelector(".time span").innerHTML =
-    parseInt(document.querySelector(".time span").innerHTML) - 1;
-  if (
-    parseInt(document.querySelector(".time span").innerHTML) === 0 &&
-    gameBlocks.every((block) => block.classList.contains("match")) === false
-  ) {
-    resultOverlay.style.color = "red";
-    resultOverlay.appendChild(document.createTextNode("لقد هلكت"));
-    document.body.prepend(resultOverlay);
-    clearInterval(timeInterval);
-  } else if (
-    gameBlocks.every((block) => block.classList.contains("match")) === true
-  ) {
-    resultOverlay.appendChild(document.createTextNode("احسنت"));
-    document.body.prepend(resultOverlay);
-    clearInterval(timeInterval);
+function timeCountDown() {
+  let countDownInterval = setInterval(timeCountdownHandler, 1000);
+
+  function timeCountdownHandler() {
+    gameDuration--;
+    console.log(gameDuration);
+    document.querySelector(".time span").innerHTML = gameDuration;
+    console.log(!gameDuration);
+    console.log(
+      !gameBlocks.every((block) => block.classList.contains("match"))
+    );
+    //lose condition
+    if (
+      !gameDuration &&
+      !gameBlocks.every((block) => block.classList.contains("match"))
+    ) {
+      resultOverlay.style.color = "red";
+      showResultMsg("لقد هلكت");
+      clearInterval(countDownInterval);
+      return;
+    }
+    // win condition
+    if (gameBlocks.every((block) => block.classList.contains("match"))) {
+      showResultMsg("احسنت");
+      clearInterval(countDownInterval);
+    }
   }
+}
+
+function showResultMsg(resultText) {
+  resultOverlay.appendChild(document.createTextNode(resultText));
+  document.body.prepend(resultOverlay);
 }
 
 function flipGameBlock(selectedBlock) {
@@ -68,7 +75,12 @@ function flipGameBlock(selectedBlock) {
 
 function stopInteraction() {
   gameContainer.classList.add("no-click");
-  setTimeout(() => gameContainer.classList.remove("no-click"), duration);
+}
+
+function continueInteraction() {
+  setTimeout(() => {
+    gameContainer.classList.remove("no-click");
+  }, flipUnmatchedGameBlockDuration);
 }
 
 function checkIdenticalBlocks(firstBlock, secondBlock) {
@@ -77,16 +89,23 @@ function checkIdenticalBlocks(firstBlock, secondBlock) {
     secondBlock.classList.remove("flipped");
     firstBlock.classList.add("match");
     secondBlock.classList.add("match");
-    document.getElementById("success").currentTime = 0;
-    document.getElementById("success").play();
-  } else {
-    document.querySelector(".tries span").innerHTML =
-      parseInt(document.querySelector(".tries span").innerHTML) + 1;
-    document.getElementById("failure").currentTime = 0;
-    document.getElementById("failure").play();
-    setTimeout(() => {
-      firstBlock.classList.remove("flipped");
-      secondBlock.classList.remove("flipped");
-    }, duration);
+    playSoundFx("success");
+    //interact
+    continueInteraction();
+    return;
   }
+  // gameBlocks aren't identical
+  document.querySelector(".tries span").innerHTML =
+    parseInt(document.querySelector(".tries span").innerHTML) + 1;
+  playSoundFx("failure");
+  setTimeout(() => {
+    firstBlock.classList.remove("flipped");
+    secondBlock.classList.remove("flipped");
+  }, flipUnmatchedGameBlockDuration);
+  continueInteraction();
+}
+
+function playSoundFx(soundTypeId) {
+  document.getElementById(soundTypeId).currentTime = 0;
+  document.getElementById(soundTypeId).play();
 }

@@ -22,7 +22,8 @@ body {
   height: 100%;
   z-index: 2;
   background-color: rgba(255, 255, 255, 0.605);
-  transition: opacitrgba(255, 255, 255, 0.434);
+  transition: opacity 0.3s;
+  opacity: 1;
 }
 .control-buttons span {
   position: absolute;
@@ -87,6 +88,7 @@ body {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  user-select: none;
 }
 .memory-game-container .game-block .front {
   background-color: #333;
